@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+        <meta charset="utf-8">
+        <title>D3 Py Whakapapa</title>
+        <link rel="stylesheet" href="css/foundation.css" />
+        <link rel="stylesheet" href="css/d3-context-menu.css" />
+        <link rel="stylesheet" href="css/toastr.css" />
+        <link rel="stylesheet" href="css/app.css" />
+</head>
+<body>
+        <div class="row">
+                <div class="large-10 columns">
+                        <ul class="button-group radius even-3">
+                                <li><a href="#" class="button small radius success" onclick="save_tree()">Save Whakapapa</a></li>
+                                <li><a href="/tree/file" class="button small radius info">Download JSON Whakapapa file</a></li>
+                                <li><a href="#" class="button small radius info" data-reveal-id="UploadFileModal">Upload JSON Whakapapa file</a></li>
+                        </ul>
+                </div>
+                <div class="large-2 columns">
+                </div>
+        </div>
+        <div id="tree-container"></div>
+        <div id="RenameNodeModal" class="reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+          <h2 id="modalTitle">Rename Node</h2>
+          <form>
+            <div class="row">
+              <div class="large-12 columns">
+                <label>Node name
+                  <input type="text" class="inputName" id="RenameNodeName" placeholder="node name" />
+                </label>
+              </div>
+            </div>
+            <div class="row">
+              <div class="large-8 columns">
+                &nbsp;
+              </div>
+              <div class="large-4 columns">
+                <a href="#" class="button info" onclick="close_modal()">Cancel</a>
+                <a href="#" class="button success" onclick="rename_node()">Rename</a>
+              </div>
+            </div>
+          </form>
+          <a class="close-reveal-modal" aria-label="Close">&#215;</a>
+        </div>
+        <div id="CreateNodeModal" class="reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+          <h2 id="modalTitle2">Create Node</h2>
+          <form>
+            <div class="row">
+              <div class="large-12 columns">
+                <label>Your Name
+                  <input type="text" class="inputName" id="CreateNodeName" placeholder="Your Name" />
+                </label>
+                <label>Date of Birth
+                  <input type="date" class="inputName" id="CreateNodeName1" placeholder="Date of Birth" />
+                </label>
+                <label>Gender
+                  <select>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                  </select>
+                </label>
+                <label>Adopted
+                  <select>
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                  </select>
+                </label>
+              </div>
+            </div>
+            <div class="row">
+              <div class="large-8 columns">
+                &nbsp;
+              </div>
+              <div class="large-4 columns">
+                <a href="#" class="button info" onclick="close_modal()">Cancel</a>
+                <a href="#" class="button success" onclick="create_node()">Create</a>
+              </div>
+            </div>
+          </form>
+          <a class="close-reveal-modal" aria-label="Close">&#215;</a>
+        </div>
+        <div id="UploadFileModal" class="reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+          <h2 id="modalTitle3">Upload JSON tree file</h2>
+          <form action="/tree/file" method="post" enctype="multipart/form-data">
+            <div class="row">
+              <div class="large-12 columns">
+                <label>JSON tree file
+                        <input type="file" name="flare.json" accept="application/json">
+                </label>
+              </div>
+            </div>
+            <div class="row">
+              <div class="large-12 columns">
+                <a href="#" class="button info" onclick="close_modal()">Cancel</a>
+                <input type="submit" class="button success" value="Upload file">
+              </div>
+            </div>
+          </form>
+          <a class="close-reveal-modal" aria-label="Close">&#215;</a>
+        </div>
+
+        <script src="js/vendor/underscore-min.js"></script>
+        <script src="js/vendor/fastclick.js"></script>
+        <script src="http://d3js.org/d3.v3.min.js"></script>
+        <script src="js/vendor/jquery.js"></script>
+        <script src="js/foundation.min.js"></script>
+        <script src="js/dndTree.js"></script>
+        <script src="js/vendor/toastr.js"></script>
+        <script src="js/vendor/d3-context-menu.js"></script>
+        <script>
+                $(document).foundation();
+                $(document).on('opened', '[data-reveal]', function () {
+                    var element = $(".inputName:visible").first();
+                    element.focus(function(){
+                        this.selectionStart = this.selectionEnd = this.value.length;
+                    });
+                    element.focus();
+                });
+                $('#RenameNodeName').keyup(function(e){
+                    if(e.keyCode == 13)
+                    {
+                        rename_node();
+                    }
+                });
+                $('#CreateNodeName').keyup(function(e){
+                    if(e.keyCode == 13)
+                    {
+                        create_node();
+                    }
+                });
+        </script>
+</body>
+</html>
+
