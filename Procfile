@@ -1,1 +1,1 @@
-web: gunicorn -w 4 d3treehorizontal:app
+web: gunicorn -w 4 app:app
