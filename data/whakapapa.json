@@ -1,10 +1,42 @@
 {
-  "name": "Mana Ariki",
-  "x0": 12.5,
+  "name": "root",
+  "x0": 37.5,
   "y0": 0,
   "depth": 0,
-  "x": 12.5,
+  "x": 37.5,
   "y": 0,
   "id": 252,
-  "_children": null
+  "_children": null,
+  "children": [
+    {
+      "name": "Chd1",
+      "id": "5000db50-78fb-4f32-b964-eb1bb6e7a1c1",
+      "depth": 1,
+      "_children": null,
+      "x": 12.5,
+      "y": 40,
+      "x0": 12.5,
+      "y0": 40
+    },
+    {
+      "name": "Sib1",
+      "id": "935e9787-fa4c-41d2-b937-ff02f2354b53",
+      "depth": 1,
+      "_children": null,
+      "x": 37.5,
+      "y": 40,
+      "x0": 37.5,
+      "y0": 40
+    },
+    {
+      "name": "Sib2",
+      "id": "95dd9324-68c7-4c21-a50d-e90a82806c98",
+      "depth": 1,
+      "_children": null,
+      "x": 62.5,
+      "y": 40,
+      "x0": 62.5,
+      "y0": 40
+    }
+  ]
 }

@@ -81,6 +81,84 @@
           </form>
           <a class="close-reveal-modal" aria-label="Close">&#215;</a>
         </div>
+
+<div id="CreateNodeModalSibling" class="reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+  <h2 id="modalTitleSibling">Create Node Sibling</h2>
+  <form>
+    <div class="row">
+      <div class="large-12 columns">
+        <label>Your Name
+          <input type="text" class="inputName" id="CreateNodeNameSibling" placeholder="Your Name" />
+        </label>
+        <label>Date of Birth
+          <input type="date" class="inputName" id="CreateNodeNameSibling2" placeholder="Date of Birth" />
+        </label>
+        <label>Gender
+          <select>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </select>
+        </label>
+        <label>Adopted
+          <select>
+            <option value="yes">Yes</option>
+            <option value="no">No</option>
+          </select>
+        </label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="large-8 columns">
+        &nbsp;
+      </div>
+      <div class="large-4 columns">
+        <a href="#" class="button info" onclick="close_modal()">Cancel</a>
+        <a href="#" class="button success" onclick="create_sibling_node()">Create</a>
+      </div>
+    </div>
+  </form>
+  <a class="close-reveal-modal" aria-label="Close">&#215;</a>
+</div>
+
+<div id="CreateNodeModalParent" class="reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+  <h2 id="modalTitleParent">Create Node Sibling</h2>
+  <form>
+    <div class="row">
+      <div class="large-12 columns">
+        <label>Your Name
+          <input type="text" class="inputName" id="CreateNodeNameParent" placeholder="Your Name" />
+        </label>
+        <label>Date of Birth
+          <input type="date" class="inputName" id="CreateNodeNameParent2" placeholder="Date of Birth" />
+        </label>
+        <label>Gender
+          <select>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </select>
+        </label>
+        <label>Adopted
+          <select>
+            <option value="yes">Yes</option>
+            <option value="no">No</option>
+          </select>
+        </label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="large-8 columns">
+        &nbsp;
+      </div>
+      <div class="large-4 columns">
+        <a href="#" class="button info" onclick="close_modal()">Cancel</a>
+        <a href="#" class="button success" onclick="create_parent_node()">Create</a>
+      </div>
+    </div>
+  </form>
+  <a class="close-reveal-modal" aria-label="Close">&#215;</a>
+</div>
+
+
         <div id="UploadFileModal" class="reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
           <h2 id="modalTitle3">Upload JSON tree file</h2>
           <form action="/tree/file" method="post" enctype="multipart/form-data">
@@ -128,6 +206,16 @@
                     if(e.keyCode == 13)
                     {
                         create_node();
+                    }
+                });
+                $('#CreateNodeNameSibling').keyup(function (e) {
+                    if (e.keyCode == 13) {
+                      create_sibling_node();
+                    }
+                });
+                $('#CreateNodeNameParent').keyup(function (e) {
+                    if (e.keyCode == 13) {
+                      create_parent_node();
                     }
                 });
         </script>

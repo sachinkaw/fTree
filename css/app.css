@@ -2,25 +2,23 @@
   cursor: pointer;
 }
 
-.overlay{
-    background-color:#EEE;
+.overlay {
+  background-color: #eee;
 }
- 
+
 .node circle {
   fill: #fff;
   stroke: steelblue;
   stroke-width: 1.5px;
 }
- 
+
 .node text {
-  font-size:10px; 
-  font-family:sans-serif;
+  font-size: 10px;
+  font-family: sans-serif;
 }
- 
+
 .link {
   fill: none;
-  stroke: #ccc;
-  stroke-width: 1.5px;
 }
 
 .templink {
@@ -29,20 +27,20 @@
   stroke-width: 3px;
 }
 
-.ghostCircle.show{
-    display:block;
+.ghostCircle.show {
+  display: block;
 }
 
-.ghostCircle, .activeDrag .ghostCircle{
-     display: none;
+.ghostCircle,
+.activeDrag .ghostCircle {
+  display: none;
 }
 
 .hidden {
-        display: none;
+  display: none;
 }
 
 .button {
-        border: 1px solid black;
-        margin-bottom: 1px;
-  }
-
+  border: 1px solid black;
+  margin-bottom: 1px;
+}
