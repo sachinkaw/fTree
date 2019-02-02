@@ -1,22 +1,38 @@
-{
-  "name": "root1",
-  "x0": 12.5,
-  "y0": 0,
-  "depth": 0,
-  "x": 12.5,
-  "y": 0,
-  "id": 252,
-  "_children": null,
-  "children": [
-    {
-      "name": "Chd",
-      "id": "6e81f14f-f3ad-49f9-bc95-b72d55f66530",
-      "depth": 1,
-      "_children": null,
-      "x": 12.5,
-      "y": 50,
-      "x0": 12.5,
-      "y0": 50
-    }
-  ]
-}
+[
+  {
+    "id": "292203a6-7ba5-43d6-9eb0-e526a2cbe282",
+    "name": "Kahu",
+    "class": "node",
+    "textClass": "node-text",
+    "depthOffset": 1,
+    "extra": {},
+    "marriages": [
+      {
+        "children": [
+          {
+            "id": "f95cfd2d-23bc-4f71-8b91-007ee39c4a93",
+            "name": "Rawiri",
+            "marriages": [
+              {
+                "spouse": {
+                  "id": "7ac3269c-b37c-43d4-80bc-81bab843d515",
+                  "name": "Awhina"
+                },
+                "children": [
+                  { 
+                    "id": "61b5a735-b396-4aac-909b-273551d3395e",
+                    "name": "Tui"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "e86dd806-d3ba-4c50-a52e-8a076359a750",
+            "name": "Te Aroha"
+          }
+        ]
+      }
+    ]
+  }
+]
