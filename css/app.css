@@ -43,3 +43,18 @@
 .radius {
   border-radius: 4px;
 }
+
+/* dTree */
+.linage {
+  fill: none;
+  stroke: black;
+}
+.marriage {
+  fill: none;
+  stroke: black;
+}
+.node {
+  background-color: lightblue;
+  border-style: solid;
+  border-width: 1px;
+}
