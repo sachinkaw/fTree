@@ -20,7 +20,8 @@ function createNode(node) {
     extra: {
       id: generateUUID()
     },
-    marriages: []
+    marriages: [],
+    children: []
   };
 
   return Object.assign({}, nodeEssentials, node);
@@ -37,8 +38,11 @@ Tree.prototype.addParent = function(node, child) {
 };
 
 Tree.prototype.addChild = function(node, parent) {
+  if (!parent) {
+    throw new Error("Tried to add a child, but couldn't find parent.");
+  }
+
   var newNode = createNode(node);
-  console.log(parent);
   if (parent) {
     if (parent.marriages.length) {
       // Adding child to parent assumes first element in marriages. To add to a different marriage,
@@ -64,39 +68,24 @@ Tree.prototype.addChild = function(node, parent) {
   this.tree = newNode;
 };
 
-Tree.prototype.addSibling = function(node, sibling) {
-  if (!sibling) {
-    throw new Error("Tried to add a sibling, but sibling didn't exist.");
-  }
-  var parent = this.findParent(sibling);
+Tree.prototype.addSibling = function(node, parent) {
   if (!parent) {
-    throw new Error("Couldn't find a parent for that sibling.");
+    throw new Error("Tried to add a sibling, but couldn't find parent.");
   }
-  parent.children.push(node);
+
+  var newNode = createNode(node);
+  if (parent.marriages.length) {
+    // TODO: consider selecting for a particular 'marriage'
+    parent.marriages[0].children.push(newNode);
+  } else {
+    parent.children.push(newNode);
+  }
 };
 
 Tree.prototype.isEmpty = function() {
   return (
     Object.keys(this.tree).length === 0 && this.tree.constructor === Object
   );
-};
-
-Tree.prototype.findParent = function(needle, nodes) {
-  var result = null;
-  var self = this;
-  var haystack = nodes || this.tree;
-  if (haystack.marriages.length) {
-    haystack.marriages.forEach(function(marriage) {
-      marriage.children.forEach(function(node) {
-        if (node.extra.id === needle) {
-          result = haystack;
-        } else {
-          result = self.findParent(needle, node);
-        }
-      });
-    });
-  }
-  return result;
 };
 
 Tree.prototype.findNodeByIdInChildren = function(needle, haystack) {
@@ -156,16 +145,64 @@ Tree.prototype.findNodeById = function(needle, nodes) {
     return haystack;
   }
 
-  if (haystack.children) {
+  if (haystack.children.length) {
     result = this.findNodeByIdInChildren(needle, haystack);
-  }
-
-  if (result) {
-    return result;
+    if (result) {
+      return result;
+    }
   }
 
   if (haystack.marriages.length) {
     result = this.findNodeByIdInMarriages(needle, haystack);
+  }
+
+  return result;
+};
+
+// NOTE: non-recursive, just looks in the next tier for a match.
+Tree.prototype.hasChild = function(needle, haystack) {
+  var found = haystack.children.find(function(child) {
+    return child.extra.id === needle;
+  });
+
+  if (found) {
+    return true;
+  }
+
+  return !!haystack.marriages.find(function(marriage) {
+    return !!marriage.children.find(function(child) {
+      return child.extra.id === needle;
+    });
+  });
+};
+
+Tree.prototype.findParentById = function(needle, nodes) {
+  var haystack = nodes || this.tree;
+  var result = null;
+  var self = this;
+
+  if (this.hasChild(needle, haystack)) {
+    return haystack;
+  }
+
+  if (haystack.children.length) {
+    haystack.children.forEach(function(child) {
+      var found = self.findParentById(needle, child);
+      if (found) {
+        result = found;
+      }
+    });
+  }
+
+  if (haystack.marriages.length) {
+    haystack.marriages.forEach(function(marriage) {
+      marriage.children.forEach(function(child) {
+        var found = self.findParentById(needle, child);
+        if (found) {
+          result = found;
+        }
+      });
+    });
   }
 
   return result;
