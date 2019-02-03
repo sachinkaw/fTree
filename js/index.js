@@ -41,6 +41,26 @@ var whakapapa = new Tree({
                   marriages: []
                 }
               ]
+            },
+            {
+              spouse: {
+                extra: {
+                  id: "5abacf1b-b194-4904-9b62-f11c2cb0119d"
+                },
+                name: "Kaia",
+                children: [],
+                marriages: []
+              },
+              children: [
+                {
+                  extra: {
+                    id: "dab85dc6-8bcc-4ec1-93b8-edad8917dbb7"
+                  },
+                  name: "Manaia",
+                  children: [],
+                  marriages: []
+                }
+              ]
             }
           ]
         },
@@ -124,7 +144,7 @@ function createSibling() {
   var name = $("#CreateNodeNameSibling").val();
   var nodeId = $("#CreateNodeModalSibling").data("nodeId");
   var parent = whakapapa.findParentById(nodeId);
-  whakapapa.addSibling({ name: name }, parent);
+  whakapapa.addSibling({ name: name }, parent, nodeId);
 
   $("#CreateNodeNameSibling").val("");
   updateTree();

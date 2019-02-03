@@ -50,11 +50,7 @@ Tree.prototype.addChild = function(node, parent) {
       parent.marriages[0].children.push(newNode);
     } else {
       // Spouse unknown at this point, so no 'marriage'
-      if (parent.children) {
-        parent.children.push(newNode);
-      } else {
-        parent.children = [newNode];
-      }
+      parent.children.push(newNode);
     }
     return;
   }
@@ -68,17 +64,31 @@ Tree.prototype.addChild = function(node, parent) {
   this.tree = newNode;
 };
 
-Tree.prototype.addSibling = function(node, parent) {
+Tree.prototype.addSibling = function(node, parent, siblingId) {
   if (!parent) {
     throw new Error("Tried to add a sibling, but couldn't find parent.");
   }
 
   var newNode = createNode(node);
   if (parent.marriages.length) {
-    // TODO: consider selecting for a particular 'marriage'
-    parent.marriages[0].children.push(newNode);
-  } else {
-    parent.children.push(newNode);
+    // Try to add to the same 'marriage' as the sibling
+    var sameMarriage = parent.marriages.find(function(marriage) {
+      return !!marriage.children.find(function(child) {
+        return child.extra.id === siblingId;
+      });
+    });
+    if (sameMarriage) {
+      sameMarriage.children.push(newNode);
+      return;
+    }
+  }
+
+  parent.children.push(newNode);
+};
+
+Tree.prototype.addParent = function(node, child) {
+  if (!child) {
+    throw new Error("Tried to add a parent, but couldn't find child.");
   }
 };
 
