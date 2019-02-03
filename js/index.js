@@ -1,41 +1,179 @@
-// Re-work tree using dTree library
 var whakapapa = new Tree({
-  id: "292203a6-7ba5-43d6-9eb0-e526a2cbe282",
-  name: "Kahu",
-  depthOffset: 1,
-  extra: {},
+  extra: {
+    id: "292203a6-7ba5-43d6-9eb0-e526a2cbe282"
+  },
+  name: "Manawa",
   marriages: [
     {
       spouse: {
-        id: "6a29f0c3-5d03-458a-8bff-7e478c7bbdf1",
-        name: "Manawa"
+        extra: {
+          id: "6a29f0c3-5d03-458a-8bff-7e478c7bbdf1"
+        },
+        name: "Kahu"
       },
       children: [
         {
-          id: "f95cfd2d-23bc-4f71-8b91-007ee39c4a93",
+          extra: {
+            id: "f95cfd2d-23bc-4f71-8b91-007ee39c4a93"
+          },
           name: "Rawiri",
           marriages: [
             {
               spouse: {
-                id: "7ac3269c-b37c-43d4-80bc-81bab843d515",
+                extra: {
+                  id: "7ac3269c-b37c-43d4-80bc-81bab843d515"
+                },
                 name: "Awhina"
               },
               children: [
                 {
-                  id: "61b5a735-b396-4aac-909b-273551d3395e",
-                  name: "Tui"
+                  extra: {
+                    id: "61b5a735-b396-4aac-909b-273551d3395e"
+                  },
+                  name: "Tui",
+                  marriages: []
                 }
               ]
             }
           ]
         },
         {
-          id: "e86dd806-d3ba-4c50-a52e-8a076359a750",
-          name: "Te Aroha"
+          extra: {
+            id: "e86dd806-d3ba-4c50-a52e-8a076359a750"
+          },
+          name: "Te Aroha",
+          marriages: []
         }
       ]
     }
   ]
 });
 
-dTree.init([whakapapa.tree]);
+// var menu = [
+//   {
+//     title: "Rename node",
+//     action: function(elm, d, i) {
+//       console.log("Rename node");
+//       $("#RenameNodeName").val(d.name);
+//       rename_node_modal_active = true;
+//       node_to_rename = d;
+//       $("#RenameNodeName").focus();
+//       $("#RenameNodeModal").foundation("reveal", "open");
+//     }
+//   },
+//   {
+//     title: "Delete node",
+//     action: function(elm, d, i) {
+//       console.log("Delete node");
+//       delete_node(d);
+//     }
+//   },
+//   {
+//     title: "Create child node",
+//     action: function(elm, d, i) {
+//       console.log("Create child node");
+//       create_node_parent = d;
+//       create_node_modal_active = true;
+//       $("#CreateNodeModal").foundation("reveal", "open");
+//       $("#CreateNodeName").focus();
+//     }
+//   },
+//   {
+//     title: "Create sibling node",
+//     action: function(elm, d, i) {
+//       console.log("Create sibling node");
+//       create_node_parent = d;
+//       create_node_modal_active = true;
+//       $("#CreateNodeModalSibling").foundation("reveal", "open");
+//       $("#CreateNodeNameSibling").focus();
+//     }
+//   },
+//   {
+//     title: "Create parent node",
+//     action: function(elm, d, i) {
+//       console.log("Create parent node");
+//       create_node_parent = d;
+//       create_node_modal_active = true;
+//       $("#CreateNodeModalParent").foundation("reveal", "open");
+//       $("#CreateNodeNameParent").focus();
+//     }
+//   }
+// ];
+//
+
+function createChild() {
+  var name = $("#CreateNodeName").val();
+  var nodeId = $("#CreateNodeModal").data("nodeId");
+  var parent = whakapapa.findNodeById(nodeId);
+  whakapapa.addChild({ name: name }, parent);
+
+  $("#CreateNodeName").val("");
+  updateTree();
+  closeModal("#CreateNodeModal");
+}
+
+function updateTree() {
+  // TODO: Ideally, would be nice not to recreate the whole graph on changes.
+  $("#tree-container").empty();
+  dTree.init([whakapapa.tree], {
+    target: "#tree-container",
+    callbacks: {
+      nodeRightClick: contextMenu
+    },
+    height: 800,
+    width: 800
+  });
+}
+
+function openModal(id) {
+  $(id).focus();
+  $(id).foundation("open");
+}
+
+function closeModal(id) {
+  $(id).foundation("close");
+}
+
+function contextMenu(name, extra, id) {
+  var $target = $(d3.event.target);
+  var contextMenu = new Foundation.ContextMenu($target, {
+    position: d3.event,
+    structure: [
+      {
+        text: "Rename",
+        click: function() {
+          $("#RenameNodeName").val(name);
+          $("#RenameNodeModal").data("nodeId", extra.id);
+          openModal("#RenameNodeModal");
+        }
+      },
+      {
+        text: "Create parent",
+        click: function() {
+          $("#CreateNodeModalParent").data("nodeId", extra.id);
+          openModal("#CreateNodeModalParent");
+        }
+      },
+      {
+        text: "Create child",
+        click: function() {
+          $("#CreateNodeModal").data("nodeId", extra.id);
+          openModal("#CreateNodeModal");
+        }
+      },
+      {
+        text: "Create sibling",
+        click: function() {
+          $("#CreateNodeModalSibling").data("nodeId", extra.id);
+          openModal("#CreateNodeModalSibling");
+        }
+      }
+    ]
+  });
+
+  $target.one("hide.zf.contextmenu", function() {
+    contextMenu.destroy();
+  });
+}
+
+updateTree();
