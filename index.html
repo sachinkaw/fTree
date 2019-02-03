@@ -21,6 +21,7 @@
             </div>
           </div>
         </div>
+        <div id="error-message" class="row columns large-offset-2 large-8"></div>
         <div id="tree-container" class="row columns large-offset-3 large-6"></div>
 
         <div id="RenameNodeModal" class="reveal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
@@ -148,7 +149,7 @@
               </div>
               <div class="large-4 columns">
                 <a href="#" class="button info" data-close>Cancel</a>
-                <a href="#" class="button success">Create</a>
+                <a href="#" class="button success"data-close onclick="createParent()">Create</a>
               </div>
             </div>
           </form>

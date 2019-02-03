@@ -33,6 +33,34 @@ Tree.prototype.addParent = function(node, child) {
   }
 
   var newNode = createNode(node);
+
+  // If child already has a parent, for the moment at least we'd want to limit parents to two. So if
+  // the child is in a 'marriage' with a 'spouse' and not in `parent.children`, this should fail.
+  var existingParent = this.findParentById(child.extra.id);
+  if (existingParent) {
+    var inChildren = existingParent.children.find(function(c) {
+      return child.extra.id === c.extra.id;
+    });
+    if (!inChildren) {
+      throw new Error(
+        "A child can't currently have more than two (biological) parents."
+      );
+    }
+
+    // On the other hand, if the child is in `parent.children`, we should create a 'marriage' and
+    // add the new parent as a 'spouse', moving the child out of `parent.children`.
+    existingParent.marriages.push({
+      spouse: newNode,
+      children: [child]
+    });
+    existingParent.children = existingParent.children.filter(function(c) {
+      return c.extra.id !== child.extra.id;
+    });
+    return;
+  }
+
+  // Finally, if the parent is not to become a spouse, and the child is currently the root node, we
+  // should shift the entire tree so that the parent becomes the new root node.
   newNode.children.push(child);
   this.tree = newNode;
 };
@@ -84,12 +112,6 @@ Tree.prototype.addSibling = function(node, parent, siblingId) {
   }
 
   parent.children.push(newNode);
-};
-
-Tree.prototype.addParent = function(node, child) {
-  if (!child) {
-    throw new Error("Tried to add a parent, but couldn't find child.");
-  }
 };
 
 Tree.prototype.isEmpty = function() {

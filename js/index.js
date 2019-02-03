@@ -130,25 +130,48 @@ var whakapapa = new Tree({
 //
 
 function createChild() {
-  var name = $("#CreateNodeName").val();
-  var nodeId = $("#CreateNodeModal").data("nodeId");
-  var parent = whakapapa.findNodeById(nodeId);
-  whakapapa.addChild({ name: name }, parent);
+  try {
+    var name = $("#CreateNodeName").val();
+    var nodeId = $("#CreateNodeModal").data("nodeId");
+    var parent = whakapapa.findNodeById(nodeId);
+    whakapapa.addChild({ name: name }, parent);
 
-  $("#CreateNodeName").val("");
-  updateTree();
+    $("#CreateNodeName").val("");
+    updateTree();
+  } catch (e) {
+    $("#error-message").text(e.message);
+  }
   closeModal("#CreateNodeModal");
 }
 
 function createSibling() {
-  var name = $("#CreateNodeNameSibling").val();
-  var nodeId = $("#CreateNodeModalSibling").data("nodeId");
-  var parent = whakapapa.findParentById(nodeId);
-  whakapapa.addSibling({ name: name }, parent, nodeId);
+  try {
+    var name = $("#CreateNodeNameSibling").val();
+    var nodeId = $("#CreateNodeModalSibling").data("nodeId");
+    var parent = whakapapa.findParentById(nodeId);
+    whakapapa.addSibling({ name: name }, parent, nodeId);
 
-  $("#CreateNodeNameSibling").val("");
-  updateTree();
+    $("#CreateNodeNameSibling").val("");
+    updateTree();
+  } catch (e) {
+    $("#error-message").text(e.message);
+  }
   closeModal("#CreateNodeModalSibling");
+}
+
+function createParent() {
+  try {
+    var name = $("#CreateNodeNameParent").val();
+    var nodeId = $("#CreateNodeModalParent").data("nodeId");
+    var child = whakapapa.findNodeById(nodeId);
+    whakapapa.addParent({ name: name }, child);
+
+    $("#CreateNodeNameParent").val("");
+    updateTree();
+  } catch (e) {
+    $("#error-message").text(e.message);
+  }
+  closeModal("#CreateNodeModalParent");
 }
 
 function updateTree() {
