@@ -10,36 +10,19 @@
         <link rel="stylesheet" href="css/app.css">
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
-<style>
-.linage {
-    fill: none;
-    stroke: black;
-}
-.marriage {
-    fill: none;
-    stroke: black;
-}
-.node {
-    background-color: lightblue;
-    border-style: solid;
-    border-width: 1px;
-}
-</style>
 </head>
 <body>
         <div class="row">
-                <div class="large-10 large-offset-1 columns">
-                        <div class="expanded button-group">
-                                <a href="#" class="button small radius success" onclick="save_tree()">Save Whakapapa</a>
-                                <a href="/tree/file" class="button small radius info">Download JSON Whakapapa file</a>
-                                <a href="#" class="button small radius info" data-reveal-id="UploadFileModal">Upload JSON Whakapapa file</a>
-                        </div>
-                </div>
-                <div class="large-2 columns">
-                </div>
+          <div class="large-10 large-offset-1 columns">
+            <div class="expanded button-group">
+              <a href="#" class="button small radius success" onclick="save_tree()">Save Whakapapa</a>
+              <a href="/tree/file" class="button small radius info">Download JSON Whakapapa file</a>
+              <a href="#" class="button small radius info" data-reveal-id="UploadFileModal">Upload JSON Whakapapa file</a>
+            </div>
+          </div>
         </div>
-        <div id="tree-container"></div>
-        <div id="RenameNodeModal" class="reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+        <div id="tree-container" class="row columns large-offset-3 large-6"></div>
+        <div id="RenameNodeModal" class="reveal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
           <h2 id="modalTitle">Rename Node</h2>
           <form>
             <div class="row">
@@ -59,9 +42,9 @@
               </div>
             </div>
           </form>
-          <a class="close-reveal-modal" aria-label="Close">&#215;</a>
+          <a class="close-button" aria-label="Close">&#215;</a>
         </div>
-        <div id="CreateNodeModal" class="reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+        <div id="CreateNodeModal" class="reveal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
           <h2 id="modalTitle2">Create Node</h2>
           <form>
             <div class="row">
@@ -99,7 +82,7 @@
           <a class="close-reveal-modal" aria-label="Close">&#215;</a>
         </div>
 
-<div id="CreateNodeModalSibling" class="reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+<div id="CreateNodeModalSibling" class="reveal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
   <h2 id="modalTitleSibling">Create Sibling Node</h2>
   <form>
     <div class="row">
@@ -137,7 +120,7 @@
   <a class="close-reveal-modal" aria-label="Close">&#215;</a>
 </div>
 
-<div id="CreateNodeModalParent" class="reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+<div id="CreateNodeModalParent" class="reveal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
   <h2 id="modalTitleParent">Create Parent Node</h2>
   <form>
     <div class="row">
@@ -172,11 +155,11 @@
       </div>
     </div>
   </form>
-  <a class="close-reveal-modal" aria-label="Close">&#215;</a>
+  <a class="close-button" data-close aria-label="Close">&#215;</a>
 </div>
 
 
-        <div id="UploadFileModal" class="reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+        <div id="UploadFileModal" class="reveal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
           <h2 id="modalTitle3">Upload JSON tree file</h2>
           <form action="/tree/file" method="post" enctype="multipart/form-data">
             <div class="row">
@@ -193,7 +176,7 @@
               </div>
             </div>
           </form>
-          <a class="close-reveal-modal" aria-label="Close">&#215;</a>
+          <a class="close-button" data-close aria-label="Close">&#215;</a>
         </div>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
