@@ -129,6 +129,19 @@ var whakapapa = new Tree({
 // ];
 //
 
+function renameNode() {
+  try {
+    var name = $("#RenameNodeName").val();
+    var nodeId = $("#RenameNodeModal").data("nodeId");
+    whakapapa.renameNodeById(nodeId, name);
+
+    $("#RenameNodeName").val("");
+    updateTree();
+  } catch (e) {
+    $("#error-message").text(e.message);
+  }
+}
+
 function createChild() {
   try {
     var name = $("#CreateNodeName").val();
@@ -141,7 +154,6 @@ function createChild() {
   } catch (e) {
     $("#error-message").text(e.message);
   }
-  closeModal("#CreateNodeModal");
 }
 
 function createSibling() {
@@ -156,7 +168,6 @@ function createSibling() {
   } catch (e) {
     $("#error-message").text(e.message);
   }
-  closeModal("#CreateNodeModalSibling");
 }
 
 function createParent() {
@@ -171,7 +182,6 @@ function createParent() {
   } catch (e) {
     $("#error-message").text(e.message);
   }
-  closeModal("#CreateNodeModalParent");
 }
 
 function updateTree() {

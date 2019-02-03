@@ -27,6 +27,15 @@ function createNode(node) {
   return Object.assign({}, nodeEssentials, node);
 }
 
+Tree.prototype.renameNodeById = function(id, name) {
+  var node = this.findNodeById(id);
+  if (!node) {
+    throw new Error("Couldn't find that node.");
+  }
+
+  node.name = name;
+};
+
 Tree.prototype.addParent = function(node, child) {
   if (!child) {
     throw new Error("Can't add a parent node without a child.");
