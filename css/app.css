@@ -40,7 +40,6 @@
   display: none;
 }
 
-.button {
-  border: 1px solid black;
-  margin-bottom: 1px;
+.radius {
+  border-radius: 4px;
 }

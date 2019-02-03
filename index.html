@@ -4,10 +4,11 @@
 <head>
         <meta charset="utf-8"/>
         <title>D3 Py Whakapapa</title>
-        <link rel="stylesheet" href="css/foundation.css" />
-        <link rel="stylesheet" href="css/d3-context-menu.css" />
-        <link rel="stylesheet" href="css/toastr.css" />
-        <link rel="stylesheet" href="css/app.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.5.3/css/foundation-float.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/foundation-contextmenu@0.0.9/dist/foundation.contextMenu.min.css">
+        <link rel="stylesheet" href="css/toastr.css">
+        <link rel="stylesheet" href="css/app.css">
+
         <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
 <style>
 .linage {
@@ -27,12 +28,12 @@
 </head>
 <body>
         <div class="row">
-                <div class="large-10 columns">
-                        <ul class="button-group radius even-3">
-                                <li><a href="#" class="button small radius success" onclick="save_tree()">Save Whakapapa</a></li>
-                                <li><a href="/tree/file" class="button small radius info">Download JSON Whakapapa file</a></li>
-                                <li><a href="#" class="button small radius info" data-reveal-id="UploadFileModal">Upload JSON Whakapapa file</a></li>
-                        </ul>
+                <div class="large-10 large-offset-1 columns">
+                        <div class="expanded button-group">
+                                <a href="#" class="button small radius success" onclick="save_tree()">Save Whakapapa</a>
+                                <a href="/tree/file" class="button small radius info">Download JSON Whakapapa file</a>
+                                <a href="#" class="button small radius info" data-reveal-id="UploadFileModal">Upload JSON Whakapapa file</a>
+                        </div>
                 </div>
                 <div class="large-2 columns">
                 </div>
@@ -195,20 +196,14 @@
           <a class="close-reveal-modal" aria-label="Close">&#215;</a>
         </div>
 
-        <div id="graph"></div>
-        <!-- <script src="js/vendor/underscore-min.js"></script> -->
-        <!-- <script src="js/vendor/fastclick.js"></script> -->
-        <!-- <script src="http://d3js.org/d3.v3.min.js"></script> -->
-        <!-- <script src="js/vendor/jquery.js"></script> -->
-        <!-- <script src="js/dndTree.js"></script> -->
-        <!-- <script src="js/vendor/toastr.js"></script> -->
-        <!-- <script src="js/vendor/d3-context-menu.js"></script> -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.11/lodash.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.8.0/d3.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.3/js/foundation.min.js"></script>
-        <script src="https://cdn.rawgit.com/ErikGartner/dTree/2.0.2/dist/dTree.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.5.3/js/foundation.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/foundation-contextmenu@0.0.9/dist/foundation.contextMenu.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/gh/richchurcher/dTree@54893bf/dist/dTree.min.js"></script>
+        <script src="js/vendor/toastr.js"></script>
         <script src="js/tree.js"></script>
         <script src="js/index.js"></script>
         <script>
