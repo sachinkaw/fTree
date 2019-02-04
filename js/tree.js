@@ -103,31 +103,19 @@ Tree.prototype.addChild = function(node, parent) {
   }
 
   var newNode = createNode(node);
-  if (parent) {
-    var marriage = this.findMarriageBySpouseId(parent.extra.id);
-    console.log("M", marriage);
-    if (marriage) {
-      marriage.children.push(newNode);
-      return;
-    }
-    if (parent.marriages.length) {
-      // Adding child to parent assumes first element in marriages. To add to a different marriage,
-      // I guess you'd use addSibling. Kind of annoying that they must be called 'marriages'!
-      parent.marriages[0].children.push(newNode);
-    } else {
-      // Spouse unknown at this point, so no 'marriage'
-      parent.children.push(newNode);
-    }
+  var marriage = this.findMarriageBySpouseId(parent.extra.id);
+  if (marriage) {
+    marriage.children.push(newNode);
     return;
   }
-
-  if (this.isEmpty && !parent) {
-    throw new Error(
-      "Can't add a node without a parent or child unless it's the first one."
-    );
+  if (parent.marriages.length) {
+    // Adding child to parent assumes first element in marriages. To add to a different marriage,
+    // I guess you'd use addSibling. Kind of annoying that they must be called 'marriages'!
+    parent.marriages[0].children.push(newNode);
+  } else {
+    // Spouse unknown at this point, so no 'marriage'
+    parent.children.push(newNode);
   }
-
-  this.tree = newNode;
 };
 
 Tree.prototype.addSibling = function(node, parent, siblingId) {
@@ -229,15 +217,15 @@ Tree.prototype.findNodeByIdInChildren = function(needle, haystack) {
 Tree.prototype.findNodeByIdInMarriages = function(needle, haystack) {
   var self = this;
   var result = null;
-  haystack.marriages.find(function(marriage) {
-    var found = marriage.children.find(function(child) {
+  haystack.marriages.some(function(marriage) {
+    marriage.children.some(function(child) {
       if (child.extra.id === needle) {
         result = child;
         return true;
       }
       return false;
     });
-    if (found) {
+    if (result) {
       return true;
     }
 
