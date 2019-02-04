@@ -75,7 +75,7 @@ function renameNode() {
     $("#RenameNodeName").val("");
     updateTree();
   } catch (e) {
-    $("#error-message").text(e.message);
+    showError(e);
   }
 }
 
@@ -89,7 +89,7 @@ function createChild() {
     $("#CreateNodeName").val("");
     updateTree();
   } catch (e) {
-    $("#error-message").text(e.message);
+    showError(e);
   }
 }
 
@@ -103,7 +103,7 @@ function createSibling() {
     $("#CreateNodeNameSibling").val("");
     updateTree();
   } catch (e) {
-    $("#error-message").text(e.message);
+    showError(e);
   }
 }
 
@@ -117,7 +117,7 @@ function createParent() {
     $("#CreateNodeNameParent").val("");
     updateTree();
   } catch (e) {
-    $("#error-message").text(e.message);
+    showError(e);
   }
 }
 
@@ -137,10 +137,19 @@ function saveTree() {
 }
 
 function openModal(id) {
+  clearError();
   $(id).focus();
   $(id).foundation("open");
 }
 
 function closeModal(id) {
   $(id).foundation("close");
+}
+
+function showError(err) {
+  $("#error-message").text(err.message);
+}
+
+function clearError() {
+  $("#error-message").empty();
 }
