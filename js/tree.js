@@ -1,3 +1,20 @@
+// Manage family tree state for display using dTree.
+//
+// The overwhelming impression here is that almost all of this, particularly traversing the tree in
+// searches, could be much better optimised. It's somewhat constrained by the format that dTree
+// expects, though one option might be to store the whole thing in a different format and provide
+// the ability to convert where required.
+//
+// The terminology used to describe families is rather archaic, but it's a side effect of dTree's
+// conventions.
+//
+// Current limitations:
+//  * dTree doesn't support tracing the lineage of the spouse, so adding a parent to a spouse
+//  doesn't really work (the gender of the spouse is irrelevant here: whichever parent is created
+//  first, the _other_ one is the spouse!)
+//  * For similar reasons, currently can't add a sibling to a spouse. You _can_ add children though,
+//  it records them under the 'marriage'.
+
 function Tree(initialState) {
   this.tree = initialState || {};
 }
@@ -41,6 +58,12 @@ Tree.prototype.addParent = function(node, child) {
     throw new Error("Can't add a parent node without a child.");
   }
 
+  if (this.findMarriageBySpouseId(child.extra.id)) {
+    throw new Error(
+      "Adding a parent to a spouse is currently unsupported, sorry!"
+    );
+  }
+
   var newNode = createNode(node);
 
   // If child already has a parent, for the moment at least we'd want to limit parents to two. So if
@@ -81,6 +104,12 @@ Tree.prototype.addChild = function(node, parent) {
 
   var newNode = createNode(node);
   if (parent) {
+    var marriage = this.findMarriageBySpouseId(parent.extra.id);
+    console.log("M", marriage);
+    if (marriage) {
+      marriage.children.push(newNode);
+      return;
+    }
     if (parent.marriages.length) {
       // Adding child to parent assumes first element in marriages. To add to a different marriage,
       // I guess you'd use addSibling. Kind of annoying that they must be called 'marriages'!
@@ -102,6 +131,12 @@ Tree.prototype.addChild = function(node, parent) {
 };
 
 Tree.prototype.addSibling = function(node, parent, siblingId) {
+  if (this.findMarriageBySpouseId(siblingId)) {
+    throw new Error(
+      "Adding a sibling to a spouse is currently unsupported, sorry!"
+    );
+  }
+
   if (!parent) {
     throw new Error("Tried to add a sibling, but couldn't find parent.");
   }
@@ -129,33 +164,24 @@ Tree.prototype.isEmpty = function() {
   );
 };
 
-Tree.prototype.findNodeByIdInChildren = function(needle, haystack) {
-  var self = this;
+Tree.prototype.findMarriageBySpouseId = function(needle, nodes) {
   var result = null;
-  var found = haystack.children.find(function(child) {
-    return child.extra.id === needle;
+  var self = this;
+  var haystack = nodes || this.tree;
+
+  var marriage = haystack.marriages.find(function(marriage) {
+    return marriage.spouse.extra.id === needle;
   });
-  if (found) {
-    return found;
+
+  if (marriage) {
+    return marriage;
   }
 
-  haystack.children.forEach(function(child) {
-    var found = self.findNodeById(needle, child);
-    if (found) {
-      result = found;
-    }
-  });
-
-  return result;
-};
-
-Tree.prototype.findNodeByIdInMarriages = function(needle, haystack) {
-  var self = this;
-  var result = null;
-  haystack.marriages.find(function(marriage) {
-    return !!marriage.children.find(function(child) {
-      if (child.extra.id === needle) {
-        result = child;
+  haystack.marriages.some(function(marriage) {
+    !!marriage.children.some(function(child) {
+      var found = self.findMarriageBySpouseId(needle, child);
+      if (found) {
+        result = found;
         return true;
       }
       return false;
@@ -166,12 +192,74 @@ Tree.prototype.findNodeByIdInMarriages = function(needle, haystack) {
     return result;
   }
 
-  haystack.marriages.forEach(function(marriage) {
-    marriage.children.forEach(function(node) {
+  haystack.children.some(function(child) {
+    var found = self.findMarriageBySpouseId(needle, child);
+    if (found) {
+      result = found;
+      return true;
+    }
+    return false;
+  });
+
+  return result;
+};
+
+Tree.prototype.findNodeByIdInChildren = function(needle, haystack) {
+  var self = this;
+  var result = null;
+  var found = haystack.children.find(function(child) {
+    return child.extra.id === needle;
+  });
+  if (found) {
+    return found;
+  }
+
+  haystack.children.some(function(child) {
+    var found = self.findNodeById(needle, child);
+    if (found) {
+      result = found;
+      return true;
+    }
+    return false;
+  });
+
+  return result;
+};
+
+Tree.prototype.findNodeByIdInMarriages = function(needle, haystack) {
+  var self = this;
+  var result = null;
+  haystack.marriages.find(function(marriage) {
+    var found = marriage.children.find(function(child) {
+      if (child.extra.id === needle) {
+        result = child;
+        return true;
+      }
+      return false;
+    });
+    if (found) {
+      return true;
+    }
+
+    if (marriage.spouse.extra.id === needle) {
+      result = marriage.spouse;
+      return true;
+    }
+    return false;
+  });
+
+  if (result) {
+    return result;
+  }
+
+  haystack.marriages.some(function(marriage) {
+    return marriage.children.some(function(node) {
       var found = self.findNodeById(needle, node);
       if (found) {
         result = found;
+        return true;
       }
+      return false;
     });
   });
 
@@ -227,21 +315,28 @@ Tree.prototype.findParentById = function(needle, nodes) {
   }
 
   if (haystack.children.length) {
-    haystack.children.forEach(function(child) {
+    haystack.children.some(function(child) {
       var found = self.findParentById(needle, child);
       if (found) {
         result = found;
+        return true;
       }
+      return false;
     });
+    if (result) {
+      return result;
+    }
   }
 
   if (haystack.marriages.length) {
-    haystack.marriages.forEach(function(marriage) {
-      marriage.children.forEach(function(child) {
+    haystack.marriages.some(function(marriage) {
+      return marriage.children.some(function(child) {
         var found = self.findParentById(needle, child);
         if (found) {
           result = found;
+          return true;
         }
+        return false;
       });
     });
   }
