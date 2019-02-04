@@ -1,45 +1,47 @@
 const expect = chai.expect;
 
 describe("Tree", () => {
-  const MANAIA_NODE = {
-    extra: { id: "dab85dc6-8bcc-4ec1-93b8-edad8917dbb7" },
-    name: "Manaia",
-    children: [
-      {
-        extra: {
-          id: "6a59f9d6-6d61-4701-93a0-3ca6d24edd8e"
-        },
-        marriages: [],
-        children: [],
-        name: "Anahera"
-      }
-    ],
-    marriages: [
-      {
-        spouse: {
-          extra: {
-            id: "2661d03f-e898-46da-8fc7-c9fcbe16dba2"
-          },
-          marriages: [],
-          children: [],
-          name: "Tane"
-        },
-        children: [
-          {
-            extra: {
-              id: "a5847247-a3eb-45ff-86a3-a27fdb15f209"
-            },
-            marriages: [],
-            children: [],
-            name: "Nikau"
-          }
-        ]
-      }
-    ]
-  };
+  let MANAIA_NODE = null;
   let t = null;
 
   beforeEach(() => {
+    MANAIA_NODE = {
+      extra: { id: "dab85dc6-8bcc-4ec1-93b8-edad8917dbb7" },
+      name: "Manaia",
+      children: [
+        {
+          extra: {
+            id: "6a59f9d6-6d61-4701-93a0-3ca6d24edd8e"
+          },
+          marriages: [],
+          children: [],
+          name: "Anahera"
+        }
+      ],
+      marriages: [
+        {
+          spouse: {
+            extra: {
+              id: "2661d03f-e898-46da-8fc7-c9fcbe16dba2"
+            },
+            marriages: [],
+            children: [],
+            name: "Tane"
+          },
+          children: [
+            {
+              extra: {
+                id: "a5847247-a3eb-45ff-86a3-a27fdb15f209"
+              },
+              marriages: [],
+              children: [],
+              name: "Nikau"
+            }
+          ]
+        }
+      ]
+    };
+
     t = new Tree({
       extra: { id: "292203a6-7ba5-43d6-9eb0-e526a2cbe282" },
       name: "Manawa",
@@ -162,7 +164,120 @@ describe("Tree", () => {
 
     it("returns null if no parent", () => {
       const parent = t.findParentById(t.tree.extra.id);
-      expect(parent).to.equal(null);
+      expect(parent).to.be.null;
+    });
+  });
+
+  describe("addParent", () => {
+    it("throws if no child provided", () => {
+      expect(() => t.addParent({ name: "abcde" })).to.throw(/child/);
+    });
+
+    it("throws if spouse", () => {
+      const spouse = MANAIA_NODE.marriages[0].spouse;
+      expect(() => t.addParent({ name: "abcde" }, spouse)).to.throw(/spouse/);
+    });
+
+    it("throws if two parents already exist", () => {
+      const child = MANAIA_NODE.marriages[0].children[0];
+      expect(() => t.addParent({ name: "abcde" }, child)).to.throw(
+        /more than two/
+      );
+    });
+
+    it("moves the child to .children", () => {
+      const child = t.tree;
+      t.addParent({ name: "abcde" }, child);
+      expect(t.tree.children.find(c => c.extra.id === child.extra.id)).to.be.ok;
+    });
+
+    it("creates a new root node", () => {
+      const child = t.tree;
+      t.addParent({ name: "abcde" }, child);
+      expect(t.tree.name).to.equal("abcde");
+    });
+
+    it("adds a 'marriage' if a single parent already exists", () => {
+      const child = MANAIA_NODE.children[0];
+      const marriages = MANAIA_NODE.marriages.length;
+      t.addParent({ name: "abcde" }, child);
+      expect(MANAIA_NODE.marriages.length).to.equal(marriages + 1);
+    });
+
+    it("moves child from .children to .marriages if a single parent already exists", () => {
+      const child = MANAIA_NODE.children[0];
+      t.addParent({ name: "abcde" }, child);
+      const marriage = MANAIA_NODE.marriages[MANAIA_NODE.marriages.length - 1];
+      expect(marriage.children[0].extra.id).to.equal(child.extra.id);
+    });
+  });
+
+  describe("addChild", () => {
+    it("throws if no parent provided", () => {
+      expect(() => t.addChild({ name: "abcde" })).to.throw(/parent/);
+    });
+
+    it("adds to .children if .marriages empty", () => {
+      const parent = MANAIA_NODE.marriages[0].children[0];
+      t.addChild({ name: "abcde" }, parent);
+      expect(parent.children.find(c => c.name === "abcde")).to.be.ok;
+    });
+
+    it("adds to .marriages if one exists", () => {
+      t.addChild({ name: "abcde" }, MANAIA_NODE);
+      expect(MANAIA_NODE.marriages[0].children.find(c => c.name === "abcde")).to
+        .be.ok;
+    });
+
+    it("adds to .marriages if parent is spouse", () => {
+      t.addChild({ name: "abcde" }, MANAIA_NODE.marriages[0].spouse);
+      expect(MANAIA_NODE.marriages[0].children.find(c => c.name === "abcde")).to
+        .be.ok;
+    });
+  });
+
+  describe("addSibling", () => {
+    it("throws if no parent", () => {
+      expect(() => t.addSibling({ name: "abcde" })).to.throw(/parent/);
+    });
+
+    it("throws if spouse", () => {
+      const spouseId = MANAIA_NODE.marriages[0].spouse.extra.id;
+      const parent = t.tree.marriages[0].children[0];
+      expect(() => t.addSibling({ name: "abcde" }, parent, spouseId)).to.throw(
+        /spouse/
+      );
+    });
+
+    it("adds a sibling in a marriage", () => {
+      const childId = MANAIA_NODE.marriages[0].children[0].extra.id;
+      const parent = MANAIA_NODE;
+      t.addSibling({ name: "abcde" }, parent, childId);
+      const sibling = MANAIA_NODE.marriages[0].children.find(
+        c => c.name === "abcde"
+      );
+      expect(sibling).to.be.ok;
+    });
+
+    it("adds a sibling in .children", () => {
+      const childId = MANAIA_NODE.children[0].extra.id;
+      const parent = MANAIA_NODE;
+      t.addSibling({ name: "abcde" }, parent, childId);
+      const sibling = MANAIA_NODE.children.find(c => c.name === "abcde");
+      expect(sibling).to.be.ok;
+    });
+  });
+
+  describe("renameNodeById", () => {
+    it("throws if id doesn't exist", () => {
+      expect(() => t.renameNodeById("12345", "abcde")).to.throw(
+        /find that node/
+      );
+    });
+
+    it("renames a node", () => {
+      t.renameNodeById(MANAIA_NODE.extra.id, "abcde");
+      expect(MANAIA_NODE.name).to.equal("abcde");
     });
   });
 });
