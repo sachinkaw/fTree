@@ -4,25 +4,27 @@
 <head>
         <meta charset="utf-8"/>
         <title>D3 Py Whakapapa</title>
-        <link rel="stylesheet" href="css/foundation.css" />
-        <link rel="stylesheet" href="css/d3-context-menu.css" />
-        <link rel="stylesheet" href="css/toastr.css" />
-        <link rel="stylesheet" href="css/app.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.5.3/css/foundation-float.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/foundation-contextmenu@0.0.9/dist/foundation.contextMenu.min.css">
+        <link rel="stylesheet" href="css/toastr.css">
+        <link rel="stylesheet" href="css/app.css">
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
 </head>
 <body>
         <div class="row">
-                <div class="large-10 columns">
-                        <ul class="button-group radius even-3">
-                                <li><a href="#" class="button small radius success" onclick="save_tree()">Save Whakapapa</a></li>
-                                <li><a href="/tree/file" class="button small radius info">Download JSON Whakapapa file</a></li>
-                                <li><a href="#" class="button small radius info" data-reveal-id="UploadFileModal">Upload JSON Whakapapa file</a></li>
-                        </ul>
-                </div>
-                <div class="large-2 columns">
-                </div>
+          <div class="large-10 large-offset-1 columns">
+            <div class="expanded button-group">
+              <a href="#" class="button small radius success" onclick="saveTree()">Save Whakapapa</a>
+              <a href="/tree/file" class="button small radius info">Download JSON Whakapapa file</a>
+              <a href="#" class="button small radius info" data-reveal-id="UploadFileModal">Upload JSON Whakapapa file</a>
+            </div>
+          </div>
         </div>
-        <div id="tree-container"></div>
-        <div id="RenameNodeModal" class="reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+        <div id="error-message" class="row columns large-offset-2 large-8"></div>
+        <div id="tree-container" class="row columns large-offset-3 large-6"></div>
+
+        <div id="RenameNodeModal" class="reveal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
           <h2 id="modalTitle">Rename Node</h2>
           <form>
             <div class="row">
@@ -32,19 +34,17 @@
                 </label>
               </div>
             </div>
-            <div class="row">
-              <div class="large-8 columns">
-                &nbsp;
-              </div>
-              <div class="large-4 columns">
-                <a href="#" class="button info" onclick="close_modal()">Cancel</a>
-                <a href="#" class="button success" onclick="rename_node()">Rename</a>
+            <div class="row column">
+              <div class="button-group float-right">
+                <a href="#" class="button info radius" data-close>Cancel</a>
+                <a href="#" class="button success radius" data-close onclick="renameNode()">Rename</a>
               </div>
             </div>
           </form>
-          <a class="close-reveal-modal" aria-label="Close">&#215;</a>
+          <a class="close-button" data-close aria-label="Close">&#215;</a>
         </div>
-        <div id="CreateNodeModal" class="reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+
+        <div id="CreateNodeModal" class="reveal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
           <h2 id="modalTitle2">Create Node</h2>
           <form>
             <div class="row">
@@ -69,155 +69,147 @@
                 </label>
               </div>
             </div>
-            <div class="row">
-              <div class="large-8 columns">
-                &nbsp;
-              </div>
-              <div class="large-4 columns">
-                <a href="#" class="button info" onclick="close_modal()">Cancel</a>
-                <a href="#" class="button success" onclick="create_node()">Create</a>
+            <div class="row column">
+              <div class="button-group float-right">
+                <a href="#" class="button info radius" data-close>Cancel</a>
+                <a href="#" class="button success radius" data-close onclick="createChild()">Create</a>
               </div>
             </div>
           </form>
-          <a class="close-reveal-modal" aria-label="Close">&#215;</a>
+          <a class="close-button" data-close aria-label="Close">&#215;</a>
         </div>
 
-<div id="CreateNodeModalSibling" class="reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
-  <h2 id="modalTitleSibling">Create Sibling Node</h2>
-  <form>
-    <div class="row">
-      <div class="large-12 columns">
-        <label>Your Name
-          <input type="text" class="inputName" id="CreateNodeNameSibling" placeholder="Your Name" />
-        </label>
-        <label>Date of Birth
-          <input type="date" class="inputName" id="CreateNodeNameSibling2" placeholder="Date of Birth" />
-        </label>
-        <label>Gender
-          <select>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-          </select>
-        </label>
-        <label>Adopted
-          <select>
-            <option value="yes">Yes</option>
-            <option value="no">No</option>
-          </select>
-        </label>
-      </div>
-    </div>
-    <div class="row">
-      <div class="large-8 columns">
-        &nbsp;
-      </div>
-      <div class="large-4 columns">
-        <a href="#" class="button info" onclick="close_modal()">Cancel</a>
-        <a href="#" class="button success" onclick="create_sibling_node()">Create</a>
-      </div>
-    </div>
-  </form>
-  <a class="close-reveal-modal" aria-label="Close">&#215;</a>
-</div>
+        <div id="CreateNodeModalSibling" class="reveal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+          <h2 id="modalTitleSibling">Create Sibling Node</h2>
+          <form>
+            <div class="row">
+              <div class="large-12 columns">
+                <label>Your Name
+                  <input type="text" class="inputName" id="CreateNodeNameSibling" placeholder="Your Name" />
+                </label>
+                <label>Date of Birth
+                  <input type="date" class="inputName" id="CreateNodeDOBSibling" placeholder="Date of Birth" />
+                </label>
+                <label>Gender
+                  <select>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                  </select>
+                </label>
+                <label>Adopted
+                  <select>
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                  </select>
+                </label>
+              </div>
+            </div>
+            <div class="row column">
+              <div class="button-group float-right">
+                <a href="#" class="button info radius" data-close>Cancel</a>
+                <a href="#" class="button success radius" data-close onclick="createSibling()">Create</a>
+              </div>
+            </div>
+          </form>
+          <a class="close-button" data-close aria-label="Close">&#215;</a>
+        </div>
 
-<div id="CreateNodeModalParent" class="reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
-  <h2 id="modalTitleParent">Create Parent Node</h2>
-  <form>
-    <div class="row">
-      <div class="large-12 columns">
-        <label>Your Name
-          <input type="text" class="inputName" id="CreateNodeNameParent" placeholder="Your Name" />
-        </label>
-        <label>Date of Birth
-          <input type="date" class="inputName" id="CreateNodeNameParent2" placeholder="Date of Birth" />
-        </label>
-        <label>Gender
-          <select>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-          </select>
-        </label>
-        <label>Adopted
-          <select>
-            <option value="yes">Yes</option>
-            <option value="no">No</option>
-          </select>
-        </label>
-      </div>
-    </div>
-    <div class="row">
-      <div class="large-8 columns">
-        &nbsp;
-      </div>
-      <div class="large-4 columns">
-        <a href="#" class="button info" onclick="close_modal()">Cancel</a>
-        <a href="#" class="button success" onclick="create_parent_node()">Create</a>
-      </div>
-    </div>
-  </form>
-  <a class="close-reveal-modal" aria-label="Close">&#215;</a>
-</div>
+        <div id="CreateNodeModalParent" class="reveal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+          <h2 id="modalTitleParent">Create Parent Node</h2>
+          <form>
+            <div class="row">
+              <div class="large-12 columns">
+                <label>Your Name
+                  <input type="text" class="inputName" id="CreateNodeNameParent" placeholder="Your Name" />
+                </label>
+                <label>Date of Birth
+                  <input type="date" class="inputName" id="CreateNodeDOBParent" placeholder="Date of Birth" />
+                </label>
+                <label>Gender
+                  <select>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                  </select>
+                </label>
+                <label>Adopted
+                  <select>
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                  </select>
+                </label>
+              </div>
+            </div>
+            <div class="row column">
+              <div class="button-group float-right">
+                <a href="#" class="button info radius" data-close>Cancel</a>
+                <a href="#" class="button success radius"data-close onclick="createParent()">Create</a>
+              </div>
+            </div>
+          </form>
+          <a class="close-button" data-close aria-label="Close">&#215;</a>
+        </div>
 
-
-        <div id="UploadFileModal" class="reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+        <div id="UploadFileModal" class="reveal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
           <h2 id="modalTitle3">Upload JSON tree file</h2>
           <form action="/tree/file" method="post" enctype="multipart/form-data">
             <div class="row">
               <div class="large-12 columns">
                 <label>JSON tree file
-                        <input type="file" name="flare.json" accept="application/json">
+                  <input type="file" name="flare.json" accept="application/json">
                 </label>
               </div>
             </div>
-            <div class="row">
-              <div class="large-12 columns">
-                <a href="#" class="button info" onclick="close_modal()">Cancel</a>
+            <div class="row column">
+              <div class="button-group float-right">
+                <a href="#" class="button info radius" data-close>Cancel</a>
                 <input type="submit" class="button success" value="Upload file">
               </div>
             </div>
           </form>
-          <a class="close-reveal-modal" aria-label="Close">&#215;</a>
+          <a class="close-button" data-close aria-label="Close">&#215;</a>
         </div>
 
-        <script src="js/vendor/underscore-min.js"></script>
-        <script src="js/vendor/fastclick.js"></script>
-        <script src="http://d3js.org/d3.v3.min.js"></script>
-        <script src="js/vendor/jquery.js"></script>
-        <script src="js/foundation.min.js"></script>
-        <script src="js/dndTree.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.11/lodash.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.8.0/d3.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.5.3/js/foundation.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/foundation-contextmenu@0.0.9/dist/foundation.contextMenu.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/gh/richchurcher/dTree@54893bf/dist/dTree.min.js"></script>
         <script src="js/vendor/toastr.js"></script>
-        <script src="js/vendor/d3-context-menu.js"></script>
+        <script src="js/tree.js"></script>
+        <script src="js/index.js"></script>
         <script>
-                $(document).foundation();
-                $(document).on('opened', '[data-reveal]', function () {
-                    var element = $(".inputName:visible").first();
-                    element.focus(function(){
-                        this.selectionStart = this.selectionEnd = this.value.length;
-                    });
-                    element.focus();
-                });
-                $('#RenameNodeName').keyup(function(e){
-                    if(e.keyCode == 13)
-                    {
-                        rename_node();
-                    }
-                });
-                $('#CreateNodeName').keyup(function(e){
-                    if(e.keyCode == 13)
-                    {
-                        create_node();
-                    }
-                });
-                $('#CreateNodeNameSibling').keyup(function (e) {
-                    if (e.keyCode == 13) {
-                      create_sibling_node();
-                    }
-                });
-                $('#CreateNodeNameParent').keyup(function (e) {
-                    if (e.keyCode == 13) {
-                      create_parent_node();
-                    }
-                });
+          $(document).foundation();
+          $('[data-reveal]').on('opened.zf.reveal', function () {
+              var element = $(".inputName:visible").first();
+              element.focus(function(){
+                  this.selectionStart = this.selectionEnd = this.value.length;
+              });
+              element.focus();
+          });
+          $('#RenameNodeName').keyup(function(e){
+              if(e.keyCode == 13)
+              {
+                  rename_node();
+              }
+          });
+          $('#CreateNodeName').keyup(function(e){
+              if(e.keyCode == 13)
+              {
+                  create_node();
+              }
+          });
+          $('#CreateNodeNameSibling').keyup(function (e) {
+              if (e.keyCode == 13) {
+                create_sibling_node();
+              }
+          });
+          $('#CreateNodeNameParent').keyup(function (e) {
+              if (e.keyCode == 13) {
+                create_parent_node();
+              }
+          });
         </script>
 </body>
 </html>

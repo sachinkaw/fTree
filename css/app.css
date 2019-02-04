@@ -1,46 +1,30 @@
+/* dTree */
+.linage {
+  fill: none;
+  stroke: black;
+}
+.marriage {
+  fill: none;
+  stroke: black;
+}
+
 .node {
+  background-color: lightblue;
+  border-style: solid;
+  border-width: 1px;
   cursor: pointer;
 }
-
-.overlay {
-  background-color: #eee;
-}
-
-.node circle {
-  fill: #fff;
-  stroke: steelblue;
-  stroke-width: 1.5px;
-}
-
-.node text {
-  font-size: 10px;
-  font-family: sans-serif;
-}
-
-.link {
-  fill: none;
-}
-
-.templink {
-  fill: none;
-  stroke: red;
-  stroke-width: 3px;
-}
-
-.ghostCircle.show {
-  display: block;
-}
-
-.ghostCircle,
-.activeDrag .ghostCircle {
-  display: none;
-}
+/* end dTree */
 
 .hidden {
   display: none;
 }
 
-.button {
-  border: 1px solid black;
-  margin-bottom: 1px;
+.radius {
+  border-radius: 4px;
+}
+
+#error-message {
+  text-align: center;
+  color: red;
 }
