@@ -38,6 +38,13 @@ function contextMenu(name, extra, id) {
         }
       },
       {
+        text: "Delete",
+        click: function() {
+          deleteNode(extra.id);
+          updateTree();
+        }
+      },
+      {
         text: "Create parent",
         click: function() {
           $("#CreateNodeModalParent").data("nodeId", extra.id);
@@ -119,6 +126,15 @@ function createParent() {
   } catch (e) {
     showError(e);
   }
+}
+
+function deleteNode(nodeId) {
+  // try {
+  whakapapa.deleteNodeById(nodeId);
+  clearError();
+  // } catch (e) {
+  // showError(e);
+  // }
 }
 
 function saveTree() {

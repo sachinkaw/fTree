@@ -146,6 +146,92 @@ Tree.prototype.addSibling = function(node, parent, siblingId) {
   parent.children.push(newNode);
 };
 
+Tree.prototype.findPartnerBySpouseId = function(needle, nodes) {
+  var result = null;
+  var self = this;
+  var haystack = nodes || this.tree;
+
+  haystack.marriages.some(function(marriage) {
+    if (marriage.spouse.extra.id === needle) {
+      result = haystack;
+      return true;
+    }
+    return marriage.children.some(function(child) {
+      var found = self.findPartnerBySpouseId(needle, child);
+      if (found) {
+        result = found;
+        return true;
+      }
+      return false;
+    });
+  });
+
+  if (result) {
+    return result;
+  }
+
+  haystack.children.some(function(child) {
+    return child.marriages.some(function(marriage) {
+      if (marriage.spouse.extra.id === needle) {
+        result = haystack;
+        return true;
+      }
+      return marriage.children.some(function(c) {
+        var found = self.findPartnerBySpouseId(needle, c);
+        if (found) {
+          result = found;
+          return true;
+        }
+        return false;
+      });
+    });
+  });
+
+  return result;
+};
+
+Tree.prototype.deleteNodeById = function(nodeId) {
+  var marriage = this.findMarriageBySpouseId(nodeId);
+  if (marriage) {
+    var partner = this.findPartnerBySpouseId(nodeId);
+    if (!partner) {
+      throw new Error("Couldn't find a partner for that person.");
+    }
+
+    // Spouse going away, move all children from this 'marriage' to .children
+    if (marriage.children.length) {
+      partner.children = partner.children.concat(marriage.children);
+    }
+
+    // This exposes another weakness in the dTree model, since it does not allow for children of two parents
+    // who are not in a 'marriage' (think: biological parenthood). Removing the marriage simply
+    // removes it entirely, including the 'spouse'. Any children should be shifted to .children first.
+    partner.marriages = partner.marriages.filter(function(marriage) {
+      return marriage.spouse.extra.id !== nodeId;
+    });
+    return;
+  }
+
+  // Not a spouse, remove from parent (all child nodes and spouse will be removed)
+  var parent = this.findParentById(nodeId);
+  if (parent) {
+    parent.children = parent.children.filter(
+      child => child.extra.id !== nodeId
+    );
+    parent.marriages.some(function(marriage) {
+      let len = marriage.children.length;
+      marriage.children = marriage.children.filter(
+        child => child.extra.id !== nodeId
+      );
+      return marriage.children.length < len;
+    });
+    return;
+  }
+
+  // At this point, we must be deleting the root node.
+  this.tree = createNode({ name: "Empty" });
+};
+
 Tree.prototype.isEmpty = function() {
   return (
     Object.keys(this.tree).length === 0 && this.tree.constructor === Object
@@ -166,7 +252,7 @@ Tree.prototype.findMarriageBySpouseId = function(needle, nodes) {
   }
 
   haystack.marriages.some(function(marriage) {
-    !!marriage.children.some(function(child) {
+    return marriage.children.some(function(child) {
       var found = self.findMarriageBySpouseId(needle, child);
       if (found) {
         result = found;
