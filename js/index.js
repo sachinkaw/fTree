@@ -28,7 +28,11 @@ function updateTree() {
     })
     .on("end", function(d) {
       if (hoveredNodeId) {
-        whakapapa.moveNode(d.data.extra.id, hoveredNodeId);
+        try {
+          whakapapa.moveNode(d.data.extra.id, hoveredNodeId);
+        } catch (e) {
+          showError(e);
+        }
       }
       d3.select(this).attr("pointer-events", "");
       updateTree();

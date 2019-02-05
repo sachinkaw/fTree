@@ -147,15 +147,31 @@ Tree.prototype.addSibling = function(node, parent, siblingId) {
 };
 
 Tree.prototype.moveNode = function(nodeId, targetId) {
-  console.log(nodeId, targetId);
   var node = this.findNodeById(nodeId);
+  var marriage = this.findMarriageBySpouseId(nodeId);
   var target = this.findNodeById(targetId);
-  this.deleteNodeById(nodeId);
+  var targetSpouse = this.findMarriageBySpouseId(targetId);
 
-  var marriage = this.findMarriageBySpouseId(targetId);
-  if (marriage) {
+  if (!marriage && !this.findParentById(nodeId)) {
+    if (node.marriages.length) {
+      // It's the root node, but there's a spouse so they become the new root node by default.
+      // We just pick the first one in the array.
+      this.tree = node.marriages[0].spouse;
+      this.tree.children = node.marriages[0].children;
+      node.marriages.shift();
+    } else {
+      throw new Error(
+        "Can't move the root node without deleting the tree, sorry! Try adding another parent first?"
+      );
+    }
+  } else {
+    // It's not the root node, we can safely delete
+    this.deleteNodeById(nodeId);
+  }
+
+  if (targetSpouse) {
     // Dropped node on a 'spouse'
-    marriage.children.push(node);
+    targetSpouse.children.push(node);
     return;
   }
 
