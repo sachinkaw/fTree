@@ -146,6 +146,28 @@ Tree.prototype.addSibling = function(node, parent, siblingId) {
   parent.children.push(newNode);
 };
 
+Tree.prototype.moveNode = function(nodeId, targetId) {
+  console.log(nodeId, targetId);
+  var node = this.findNodeById(nodeId);
+  var target = this.findNodeById(targetId);
+  this.deleteNodeById(nodeId);
+
+  var marriage = this.findMarriageBySpouseId(targetId);
+  if (marriage) {
+    // Dropped node on a 'spouse'
+    marriage.children.push(node);
+    return;
+  }
+
+  if (target.marriages.length) {
+    // Default behaviour is to add the node to .marriages[0]
+    target.marriages[0].children.push(node);
+    return;
+  }
+
+  target.children.push(node);
+};
+
 Tree.prototype.findPartnerBySpouseId = function(needle, nodes) {
   var result = null;
   var self = this;

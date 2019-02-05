@@ -1,4 +1,5 @@
 var whakapapa = null;
+var hoveredNodeId = null;
 
 function loadTree() {
   $.get("/tree", function(data) {
@@ -11,9 +12,27 @@ function loadTree() {
 
 loadTree();
 
+// TODO: Ideally, would be nice not to recreate the whole graph on changes.
 function updateTree() {
-  // TODO: Ideally, would be nice not to recreate the whole graph on changes.
+  d3.selectAll("foreignObject").on("drag", null);
+
   $("#tree-container").empty();
+  var dragListener = d3
+    .drag()
+    .on("drag", function(d) {
+      d3.select(this)
+        .raise()
+        .attr("pointer-events", "none")
+        .attr("x", (d.x = d3.event.x))
+        .attr("y", (d.y = d3.event.y));
+    })
+    .on("end", function(d) {
+      if (hoveredNodeId) {
+        whakapapa.moveNode(d.data.extra.id, hoveredNodeId);
+      }
+      d3.select(this).attr("pointer-events", "");
+      updateTree();
+    });
   dTree.init([whakapapa.tree], {
     target: "#tree-container",
     callbacks: {
@@ -22,6 +41,14 @@ function updateTree() {
     height: 800,
     width: 800
   });
+  d3.selectAll("foreignObject")
+    .on("mouseover", function(d) {
+      hoveredNodeId = d.data.extra.id;
+    })
+    .on("mouseout", function(d) {
+      hoveredNodeId = null;
+    })
+    .call(dragListener);
 }
 
 function contextMenu(name, extra, id) {
