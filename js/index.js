@@ -129,12 +129,12 @@ function createParent() {
 }
 
 function deleteNode(nodeId) {
-  // try {
-  whakapapa.deleteNodeById(nodeId);
-  clearError();
-  // } catch (e) {
-  // showError(e);
-  // }
+  try {
+    whakapapa.deleteNodeById(nodeId);
+    clearError();
+  } catch (e) {
+    showError(e);
+  }
 }
 
 function saveTree() {
