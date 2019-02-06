@@ -310,10 +310,11 @@ Tree.prototype.findMarriageBySpouseId = function(needle, nodes) {
   return result;
 };
 
-Tree.prototype.findNodeIn = function(needle, haystack) {
+Tree.prototype.findNodeWith = function(needle, haystack, findFunc) {
   var result = null;
+  var func = findFunc.bind(this);
   for (var i = 0; i < haystack.length; i++) {
-    result = this.findNodeById(needle, haystack[i]);
+    result = func(needle, haystack[i]);
     if (result) {
       return result;
     }
@@ -330,7 +331,7 @@ Tree.prototype.findNodeById = function(needle, nodes) {
     return haystack;
   }
 
-  result = this.findNodeIn(needle, haystack.children);
+  result = this.findNodeWith(needle, haystack.children, this.findNodeById);
   if (result) {
     return result;
   }
@@ -340,7 +341,7 @@ Tree.prototype.findNodeById = function(needle, nodes) {
       result = marriage.spouse;
       return true;
     }
-    result = self.findNodeIn(needle, marriage.children);
+    result = self.findNodeWith(needle, marriage.children, self.findNodeById);
     return !!result;
   });
 
@@ -373,32 +374,15 @@ Tree.prototype.findParentById = function(needle, nodes) {
     return haystack;
   }
 
-  if (haystack.children.length) {
-    haystack.children.some(function(child) {
-      var found = self.findParentById(needle, child);
-      if (found) {
-        result = found;
-        return true;
-      }
-      return false;
-    });
-    if (result) {
-      return result;
-    }
+  result = this.findNodeWith(needle, haystack.children, this.findParentById);
+  if (result) {
+    return result;
   }
 
-  if (haystack.marriages.length) {
-    haystack.marriages.some(function(marriage) {
-      return marriage.children.some(function(child) {
-        var found = self.findParentById(needle, child);
-        if (found) {
-          result = found;
-          return true;
-        }
-        return false;
-      });
-    });
-  }
+  haystack.marriages.some(function(marriage) {
+    result = self.findNodeWith(needle, marriage.children, self.findParentById);
+    return !!result;
+  });
 
   return result;
 };
