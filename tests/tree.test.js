@@ -142,6 +142,19 @@ describe("Tree", () => {
     });
   });
 
+  describe("findPartnerBySpouseId", () => {
+    it("finds a partner", () => {
+      const spouseId = MANAIA_NODE.marriages[0].spouse.extra.id;
+      const partner = t.findPartnerBySpouseId(spouseId);
+      expect(partner).to.deep.equal(MANAIA_NODE);
+    });
+
+    it("returns null if not a spouse id", () => {
+      const partner = t.findPartnerBySpouseId(MANAIA_NODE.extra.id);
+      expect(partner).to.be.null;
+    });
+  });
+
   describe("hasChild", () => {
     it("returns true if child in children", () => {
       const childId = MANAIA_NODE.children[0].extra.id;
