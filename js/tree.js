@@ -226,8 +226,8 @@ Tree.prototype.isEmpty = function() {
   );
 };
 
-Tree.prototype.findNodeInChildren = function(needle, children) {
-  return this.findNodeWith(needle, children, this.findNodeById);
+Tree.prototype.findNodeInChildren = function(nodeId, children) {
+  return this.findNodeWith(nodeId, children, this.findNodeById);
 };
 
 Tree.prototype.findNodeInMarriages = function(needle, marriages) {
@@ -262,7 +262,6 @@ Tree.prototype.findNodeWith = function(needle, haystack, findFunc) {
 
 Tree.prototype.findNodeById = function(needle, nodes) {
   var self = this;
-  var result = null;
   var haystack = nodes || this.tree;
 
   if (haystack.extra.id === needle) {
@@ -276,66 +275,71 @@ Tree.prototype.findNodeById = function(needle, nodes) {
 };
 
 Tree.prototype.findMarriageBySpouseId = function(needle, nodes) {
-  var result = null;
-  var self = this;
   var haystack = nodes || this.tree;
 
   var marriage = haystack.marriages.find(function(marriage) {
     return marriage.spouse.extra.id === needle;
   });
 
-  if (marriage) {
-    return marriage;
+  return (
+    marriage ||
+    this.findMarriageInChildren(needle, haystack.children) ||
+    this.findMarriageInMarriages(needle, haystack.marriages)
+  );
+};
+
+Tree.prototype.findPartnerBySpouseId = function(spouseId, nodes) {
+  var haystack = nodes || this.tree;
+
+  var spouse = haystack.marriages.find(function(marriage) {
+    return marriage.spouse.extra.id == spouseId;
+  });
+  if (spouse) {
+    return haystack;
   }
 
-  haystack.marriages.some(function(marriage) {
+  return (
+    this.findPartnerInChildren(spouseId, haystack.children) ||
+    this.findPartnerInMarriages(spouseId, haystack.marriages)
+  );
+};
+
+Tree.prototype.findMarriageInChildren = function(spouseId, children) {
+  return this.findNodeWith(spouseId, children, this.findMarriageBySpouseId);
+};
+
+Tree.prototype.findMarriageInMarriages = function(spouseId, marriages) {
+  var result = null;
+  var self = this;
+
+  marriages.some(function(marriage) {
     result = self.findNodeWith(
-      needle,
+      spouseId,
       marriage.children,
       self.findMarriageBySpouseId
     );
     return !!result;
   });
 
-  if (result) {
-    return result;
-  }
-
-  result = this.findNodeWith(
-    needle,
-    haystack.children,
-    this.findMarriageBySpouseId
-  );
   return result;
 };
 
-Tree.prototype.findPartnerBySpouseId = function(needle, nodes) {
-  var result = null;
-  var self = this;
-  var haystack = nodes || this.tree;
+Tree.prototype.findPartnerInChildren = function(spouseId, children) {
+  return this.findNodeWith(spouseId, children, this.findPartnerBySpouseId);
+};
 
-  haystack.marriages.some(function(marriage) {
-    if (marriage.spouse.extra.id === needle) {
-      result = haystack;
-      return true;
-    }
+Tree.prototype.findPartnerInMarriages = function(spouseId, marriages) {
+  var self = this;
+  var result = null;
+
+  marriages.some(function(marriage) {
     result = self.findNodeWith(
-      needle,
+      spouseId,
       marriage.children,
       self.findPartnerBySpouseId
     );
     return !!result;
   });
-
-  if (result) {
-    return result;
-  }
-
-  result = this.findNodeWith(
-    needle,
-    haystack.children,
-    this.findPartnerBySpouseId
-  );
 
   return result;
 };
