@@ -229,17 +229,11 @@ Tree.prototype.findPartnerBySpouseId = function(needle, nodes) {
 };
 
 Tree.prototype.deleteNodeById = function(nodeId) {
-  var marriage = this.findMarriageBySpouseId(nodeId);
-  if (marriage) {
-    var partner = this.findPartnerBySpouseId(nodeId);
-    if (!partner) {
-      throw new Error("Couldn't find a partner for that person.");
-    }
-
+  var partner = this.findPartnerBySpouseId(nodeId);
+  if (partner) {
     // Spouse going away, move all children from this 'marriage' to .children
-    if (marriage.children.length) {
-      partner.children = partner.children.concat(marriage.children);
-    }
+    var marriage = partner.marriages.find(m => m.spouse.extra.id === nodeId);
+    partner.children = partner.children.concat(marriage.children);
 
     // This exposes another weakness in the dTree model, since it does not allow for children of two parents
     // who are not in a 'marriage' (think: biological parenthood). Removing the marriage simply
@@ -316,69 +310,19 @@ Tree.prototype.findMarriageBySpouseId = function(needle, nodes) {
   return result;
 };
 
-Tree.prototype.findNodeByIdInChildren = function(needle, haystack) {
-  var self = this;
+Tree.prototype.findNodeIn = function(needle, haystack) {
   var result = null;
-  var found = haystack.children.find(function(child) {
-    return child.extra.id === needle;
-  });
-  if (found) {
-    return found;
-  }
-
-  haystack.children.some(function(child) {
-    var found = self.findNodeById(needle, child);
-    if (found) {
-      result = found;
-      return true;
-    }
-    return false;
-  });
-
-  return result;
-};
-
-Tree.prototype.findNodeByIdInMarriages = function(needle, haystack) {
-  var self = this;
-  var result = null;
-  haystack.marriages.some(function(marriage) {
-    marriage.children.some(function(child) {
-      if (child.extra.id === needle) {
-        result = child;
-        return true;
-      }
-      return false;
-    });
+  for (var i = 0; i < haystack.length; i++) {
+    result = this.findNodeById(needle, haystack[i]);
     if (result) {
-      return true;
+      return result;
     }
-
-    if (marriage.spouse.extra.id === needle) {
-      result = marriage.spouse;
-      return true;
-    }
-    return false;
-  });
-
-  if (result) {
-    return result;
   }
-
-  haystack.marriages.some(function(marriage) {
-    return marriage.children.some(function(node) {
-      var found = self.findNodeById(needle, node);
-      if (found) {
-        result = found;
-        return true;
-      }
-      return false;
-    });
-  });
-
   return result;
 };
 
 Tree.prototype.findNodeById = function(needle, nodes) {
+  var self = this;
   var result = null;
   var haystack = nodes || this.tree;
 
@@ -386,16 +330,19 @@ Tree.prototype.findNodeById = function(needle, nodes) {
     return haystack;
   }
 
-  if (haystack.children.length) {
-    result = this.findNodeByIdInChildren(needle, haystack);
-    if (result) {
-      return result;
-    }
+  result = this.findNodeIn(needle, haystack.children);
+  if (result) {
+    return result;
   }
 
-  if (haystack.marriages.length) {
-    result = this.findNodeByIdInMarriages(needle, haystack);
-  }
+  haystack.marriages.some(function(marriage) {
+    if (marriage.spouse.extra.id === needle) {
+      result = marriage.spouse;
+      return true;
+    }
+    result = self.findNodeIn(needle, marriage.children);
+    return !!result;
+  });
 
   return result;
 };
