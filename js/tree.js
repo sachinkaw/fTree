@@ -226,6 +226,26 @@ Tree.prototype.isEmpty = function() {
   );
 };
 
+Tree.prototype.findNodeInChildren = function(needle, children) {
+  return this.findNodeWith(needle, children, this.findNodeById);
+};
+
+Tree.prototype.findNodeInMarriages = function(needle, marriages) {
+  var result = null;
+  var self = this;
+
+  marriages.some(function(marriage) {
+    if (marriage.spouse.extra.id === needle) {
+      result = marriage.spouse;
+      return true;
+    }
+    result = self.findNodeWith(needle, marriage.children, self.findNodeById);
+    return !!result;
+  });
+
+  return result;
+};
+
 // Refactor away some repetition: call `findFunc` on each element in haystack, returning early if
 // non-null. `findFunc` is expected to call itself recursively from elsewhere on the prototype.
 Tree.prototype.findNodeWith = function(needle, haystack, findFunc) {
@@ -249,21 +269,10 @@ Tree.prototype.findNodeById = function(needle, nodes) {
     return haystack;
   }
 
-  result = this.findNodeWith(needle, haystack.children, this.findNodeById);
-  if (result) {
-    return result;
-  }
-
-  haystack.marriages.some(function(marriage) {
-    if (marriage.spouse.extra.id === needle) {
-      result = marriage.spouse;
-      return true;
-    }
-    result = self.findNodeWith(needle, marriage.children, self.findNodeById);
-    return !!result;
-  });
-
-  return result;
+  return (
+    this.findNodeInChildren(needle, haystack.children) ||
+    this.findNodeInMarriages(needle, haystack.marriages)
+  );
 };
 
 Tree.prototype.findMarriageBySpouseId = function(needle, nodes) {
