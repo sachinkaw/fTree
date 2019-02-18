@@ -28,3 +28,7 @@
   text-align: center;
   color: red;
 }
+
+.node:hover {
+  background-color: cornflowerblue;
+}

@@ -109,6 +109,24 @@ describe("Tree", () => {
       const node = t.findNodeById("12345");
       expect(node).to.equal(null);
     });
+
+    it("finds a node if spouse", () => {
+      const spouse = MANAIA_NODE.marriages[0].spouse;
+      const node = t.findNodeById(spouse.extra.id);
+      expect(node).to.deep.equal(spouse);
+    });
+
+    it("finds a node if in .children", () => {
+      const child = MANAIA_NODE.children[0];
+      const node = t.findNodeById(child.extra.id);
+      expect(node).to.deep.equal(child);
+    });
+
+    it("finds a node if in .marriages", () => {
+      const child = MANAIA_NODE.marriages[0].children[0];
+      const node = t.findNodeById(child.extra.id);
+      expect(node).to.deep.equal(child);
+    });
   });
 
   describe("findMarriageBySpouseId", () => {
@@ -121,6 +139,19 @@ describe("Tree", () => {
     it("returns null for a non-spouse", () => {
       const marriage = t.findMarriageBySpouseId(MANAIA_NODE.extra.id);
       expect(marriage).to.equal(null);
+    });
+  });
+
+  describe("findPartnerBySpouseId", () => {
+    it("finds a partner", () => {
+      const spouseId = MANAIA_NODE.marriages[0].spouse.extra.id;
+      const partner = t.findPartnerBySpouseId(spouseId);
+      expect(partner).to.deep.equal(MANAIA_NODE);
+    });
+
+    it("returns null if not a spouse id", () => {
+      const partner = t.findPartnerBySpouseId(MANAIA_NODE.extra.id);
+      expect(partner).to.be.null;
     });
   });
 
@@ -278,6 +309,27 @@ describe("Tree", () => {
     it("renames a node", () => {
       t.renameNodeById(MANAIA_NODE.extra.id, "abcde");
       expect(MANAIA_NODE.name).to.equal("abcde");
+    });
+  });
+
+  describe("deleteNodeById", () => {
+    it("should transfer children from the 'marriage' to .children", () => {
+      var spouseId = MANAIA_NODE.marriages[0].spouse.extra.id;
+      var childId = MANAIA_NODE.marriages[0].children[0].extra.id;
+      t.deleteNodeById(spouseId);
+      expect(MANAIA_NODE.children.find(child => child.extra.id === childId)).to
+        .be.ok;
+    });
+
+    it("should remove the 'marriage'", () => {
+      var spouseId = MANAIA_NODE.marriages[0].spouse.extra.id;
+      t.deleteNodeById(spouseId);
+      expect(MANAIA_NODE.marriages.length).to.equal(0);
+    });
+
+    it("should remove the node", () => {
+      t.deleteNodeById(MANAIA_NODE.children[0].extra.id);
+      expect(MANAIA_NODE.children.length).to.equal(0);
     });
   });
 });
